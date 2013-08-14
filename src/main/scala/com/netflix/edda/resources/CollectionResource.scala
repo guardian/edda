@@ -71,17 +71,18 @@ class CollectionResource {
       build()
   }
 
-  private def unseen(id: String, seen: MSet[String]): Boolean = {
-    val in = seen.contains(id)
-    if (!in) seen += id
+  private def unseen(record: Record, seen: MSet[(String, Any)]): Boolean = {
+    val recordId = (record.id, record.tags.get("account"))
+    val in = seen.contains(recordId)
+    if (!in) seen += recordId
     !in
   }
 
   /** make record set unique based on record.id unless _all matrix argument used */
   private def unique(recs: Seq[Record], details: ReqDetails): Seq[Record] = {
     if (details.metaArgs.contains("_all")) return recs
-    val seen: MSet[String] = MSet()
-    recs.filter(r => unseen(r.id, seen))
+    val seen: MSet[(String, Any)] = MSet()
+    recs.filter(r => unseen(r, seen))
   }
 
   /** translate matrix arguments into a query that can be passed to Collection.query */

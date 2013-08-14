@@ -728,4 +728,8 @@ abstract class RootCollection(val rootName: String, accountName: String, ctx: Co
     case "" => rootName
     case x: String => x + "." + rootName
   }
+
+  override protected def doQuery(queryMap: Map[String, Any], limit: Int, live: Boolean, keys: Set[String], replicaOk: Boolean, state: StateMachine.State) = {
+    super.doQuery(queryMap, limit, live, keys, replicaOk, state).map { record => record.copy(tags=record.tags + ("account" -> accountName)) }
+  }
 }
